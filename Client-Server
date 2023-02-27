@@ -1,0 +1,59 @@
+package org.example;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class Client {
+    public static void main(String[] args)  {
+        Scanner skener = new Scanner(System.in);
+        System.out.println("Unijeti prvi broj: ");
+        int a = skener.nextInt();
+        System.out.println("Unijeti drugi broj: ");
+        int b = skener.nextInt();
+        int sum = a+b;
+
+
+        try(Socket socket =new Socket ("localhost",1080);
+            BufferedReader bis = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream())){
+
+            bos.write((sum + "\r\n").getBytes());
+            bos.flush();
+            String line = bis.readLine();
+            System.out.println(line);
+
+        }catch(IOException exc){
+            System.out.println(exc.getMessage());
+        }
+
+    }
+}
+package org.example;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server {public static void main(String[] args)  {
+    System.out.println("Server spreman...");
+    try (ServerSocket serverSocket= new ServerSocket(1080);
+         Socket socket = serverSocket.accept();
+         BufferedReader bis = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+         BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream())){
+         String line = bis.readLine();
+
+         bos.write(("Rezultat je:" +line).getBytes());
+
+
+         }catch(IOException exc ){
+        System.out.println(exc.getMessage());
+      }
+
+    }
